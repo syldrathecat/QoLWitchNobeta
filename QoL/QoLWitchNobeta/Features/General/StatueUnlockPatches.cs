@@ -30,9 +30,10 @@ public static class StatueUnlockPatches
     private static void OnWizardGirlUpdate(WizardGirlManage __instance)
     {
         if (_statues is null)
-        {
             return;
-        }
+
+        if (Singletons.GameSave.basic.difficulty == GameDifficulty.BossRush)
+            return;
 
         var gameSave = Game.GameSave.basic;
         var stageName = Game.sceneManager.stageName;
@@ -43,9 +44,7 @@ public static class StatueUnlockPatches
             var savePointNumber = Game.sceneManager.GetSavePointNumber(statue);
 
             if (gameSave.HasSavePointUnlocked(gameStage, savePointNumber))
-            {
                 continue;
-            }
 
             var distance = Vector3.Distance(statue.transform.position, __instance.transform.position);
 
