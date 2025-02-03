@@ -9,8 +9,6 @@ NobetaTrainer.sln.DotSettings.user
 InstallFiles
 .vscode
 .vs
-Randomizer/.idea
-Randomizer/RandomizedWitchNobeta/.idea/.idea.RandomizedWitchNobeta.dir/.idea
-Randomizer/RandomizedWitchNobeta.sln.DotSettings.user
-Randomizer/RandomizedWitchNobeta.WebSettings/SeedSettings.json
-Randomizer/RandomizedWitchNobeta.WebSettings/BonusSettings.json
+QoL/.idea
+QoL/QoLWitchNobeta/.idea/.idea.QoLWitchNobeta.dir/.idea
+QoL/QoLWitchNobeta.sln.DotSettings.user
