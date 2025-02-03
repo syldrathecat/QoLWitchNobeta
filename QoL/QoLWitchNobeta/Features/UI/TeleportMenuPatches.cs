@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using HarmonyLib;
+using QoLWitchNobeta.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,9 +14,22 @@ public static class TeleportMenuPatches
     private static UITeleportHandler _firstStage6Handler;
     private static UITeleportHandler _firstStage1Handler;
 
-    [HarmonyPatch(typeof(UITeleport), nameof(UITeleport.Init))]
-    [HarmonyPostfix]
-    private static void UITeleportInitPostfix(UITeleport __instance)
+    private static bool _isModified = false;
+    private static bool _shouldPostModify = false;
+
+    private static bool ReachedPartTwo()
+    {
+        if (Singletons.GameSave == null)
+            return false;
+
+        // Don't expand the teleport menu until the player progresses far enough
+        if (!Singletons.GameSave.basic.savePointMap.TryGetValue(GameStage.Act06_03, out var act06points) || act06points.Count == 0)
+            return false;
+
+        return true;
+    }
+
+    private static void OneTimeInit(UITeleport __instance)
     {
         var root = __instance.transform;
 
@@ -70,12 +84,26 @@ public static class TeleportMenuPatches
         _firstStage6Handler = stage6Handlers[0];
 
         Plugin.Log.LogInfo("Patched ui teleport menu");
+        _isModified = true;
+    }
+
+    [HarmonyPatch(typeof(UITeleport), nameof(UITeleport.Appear))]
+    [HarmonyPrefix]
+    private static void UITeleportAppearPrefix(UITeleport __instance)
+    {
+        _shouldPostModify = _isModified || ReachedPartTwo();
+
+        if (_shouldPostModify && !_isModified)
+            OneTimeInit(__instance);
     }
 
     [HarmonyPatch(typeof(UITeleport), nameof(UITeleport.Appear))]
     [HarmonyPostfix]
     private static void UITeleportAppearPostfix()
     {
+        if (!_shouldPostModify)
+            return;
+
         foreach (var topHandler in _topHandlers)
         {
             topHandler.SetActive(true);
